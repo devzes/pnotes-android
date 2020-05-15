@@ -11,6 +11,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.priyam.pnotes.models.Note;
+import com.priyam.pnotes.shared.PrefManager;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,10 +37,18 @@ public class ScrollingActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private NoteAdapter mNoteAdapter;
 
+    // Shared Prefernces
+    PrefManager prefManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrolling);
+
+        // Pref manager to manage shared prefernces
+        prefManager = new PrefManager(this);
+
+        // Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -98,6 +107,10 @@ public class ScrollingActivity extends AppCompatActivity {
 
     private void signOut() {
         Log.d("Priyam Start","log out now");
+
+        // Update shared preferences
+        prefManager.setIsLogin(false);
+        prefManager.setEmail("");
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.

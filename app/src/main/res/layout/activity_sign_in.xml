@@ -4,23 +4,60 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackgorund"
     tools:context=".SignInActivity">
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_centerInParent="true"
+        android:id="@+id/center_view" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/center_view">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:id="@+id/textview1"
+            android:textSize="32sp"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:text="Welcome to Pnotes!" />
+
+        <ImageView
+            android:layout_width="@dimen/img_width_height"
+            android:layout_height="@dimen/img_width_height"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/textview1"
+            android:src="@drawable/ic_tasks" />
+    </RelativeLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Get started, sign in with your Google Account!"
-        android:layout_above="@+id/sign_in_button"
-        android:layout_margin="16dp"
+        android:layout_margin="@dimen/activity_vertical_margin"
+        android:textColor="@color/white"
+        android:layout_below="@+id/center_view"
         android:padding="8dp"
+        android:id="@+id/text_view_desc"
         android:textAlignment="center"
         />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/text_view_desc"
+        android:layout_marginLeft="32dp"
+        android:padding="4dp"
+        android:layout_marginRight="32dp"
+        android:textAlignment="center"
         />
 
 </RelativeLayout>
