@@ -4,12 +4,18 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.priyam.pnotes.models.Note;
 import com.priyam.pnotes.shared.PrefManager;
 
@@ -26,6 +32,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,13 +46,15 @@ public class ScrollingActivity extends AppCompatActivity {
 
     // Shared Prefernces
     PrefManager prefManager;
+    String signedInUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrolling);
 
-        // Pref manager to manage shared prefernces
+        findViewById(R.id.activity_scrolling_progress).setVisibility(View.VISIBLE);
+        // Pref manager to manage shared preferences
         prefManager = new PrefManager(this);
 
         // Toolbar
@@ -61,6 +70,24 @@ public class ScrollingActivity extends AppCompatActivity {
             }
         });
 
+        // Firebase database first get the account signed in
+        // Check for existing Google Sign In account, if the user is already signed in
+        // the GoogleSignInAccount will be non-null.
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        signedInUser = account.getEmail();
+        int len = signedInUser.length();
+        signedInUser = signedInUser.substring(0,len-10);  //getting only the email name
+        Log.d("Siugned In user", signedInUser);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference(signedInUser);
+
+//        Note note = new Note("First note","description","date");
+//        noteList.add(note);
+//
+//        note = new Note("Second ONe","description","date");
+//        noteList.add(note);
+
+        // For adding the notelist to the screen
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view_note_list);
         mNoteAdapter = new NoteAdapter(noteList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -68,20 +95,42 @@ public class ScrollingActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mNoteAdapter);
 
-        prepareNoteData(); //Adding dummy check data for now
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Right now it updates all
+                //Log.d("Count",""+dataSnapshot.getChildrenCount());
+                if(dataSnapshot.getChildrenCount()==0){
+                    // New user
+                    findViewById(R.id.welcome_message).setVisibility(View.VISIBLE);
+                    findViewById(R.id.activity_scrolling_progress).setVisibility(View.GONE);
+                } else{
+                    noteList.clear();
+                    for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                        Note post = postSnapshot.getValue(Note.class);
+                        //Log.d("Priyam Error",post.getTitle());
+                        noteList.add(post);
+                    }
+                    findViewById(R.id.activity_scrolling_progress).setVisibility(View.GONE);
+                    recyclerView.setAdapter(mNoteAdapter);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("The read failed: " ,databaseError.getMessage());
+                findViewById(R.id.activity_scrolling_progress).setVisibility(View.GONE);
+                Toast.makeText(ScrollingActivity.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+        });
+
+//        note = new Note("Hello Bye","descripton","date");
+//        noteList.add(note);
+
+
     }
 
-    private void prepareNoteData(){
-        Note note = new Note("First note");
-        noteList.add(note);
-
-        note = new Note("Second ONe");
-        noteList.add(note);
-
-        note = new Note("Hello Bye");
-        noteList.add(note);
-
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

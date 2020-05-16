@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimary">#2288FF</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
 
     <color name="colorBackgorund">#03DAC5</color>
     <color name="white">#ffffff</color>
+
+    <color name="lightyellowc">#ffffee</color>
+    <color name="lightyellow9">#ffff99</color>
+    <color name="lightyellow7">#ffff77</color>
+    <color name="colorListItem">#bbffff</color>
+    <color name="colorAccentLight2">#00ddff</color>
+
+    <color name="timestamp">#858585</color>
 </resources>
