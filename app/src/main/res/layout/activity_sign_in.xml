@@ -13,28 +13,23 @@
         android:layout_centerInParent="true"
         android:id="@+id/center_view" />
 
-    <RelativeLayout
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/center_view">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:id="@+id/textview1"
+        android:textSize="32sp"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:text="Welcome to Pnotes!" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="100dp"
-            android:id="@+id/textview1"
-            android:textSize="32sp"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:padding="@dimen/activity_horizontal_margin"
-            android:text="Welcome to Pnotes!" />
-
-    </RelativeLayout>
 
     <ImageView
-        android:layout_width="@dimen/img_width_height"
-        android:layout_height="@dimen/img_width_height"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
+        android:layout_below="@+id/textview1"
         android:layout_above="@+id/center_view"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:src="@drawable/ic_tasks" />
@@ -61,5 +56,14 @@
         android:layout_marginRight="32dp"
         android:textAlignment="center"
         />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Take care Internet is working!"
+        android:textAlignment="center"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:layout_alignParentBottom="true"
+        android:textColor="@color/white" />
 
 </RelativeLayout>

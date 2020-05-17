@@ -131,6 +131,7 @@ public class ScrollingActivity extends AppCompatActivity {
                     findViewById(R.id.welcome_message).setVisibility(View.VISIBLE);
                     findViewById(R.id.activity_scrolling_progress).setVisibility(View.GONE);
                 } else{
+                    findViewById(R.id.welcome_message).setVisibility(View.GONE);
                     noteList.clear();
                     for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
                         // Store the key list
