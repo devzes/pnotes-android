@@ -29,13 +29,15 @@
             android:padding="@dimen/activity_horizontal_margin"
             android:text="Welcome to Pnotes!" />
 
-        <ImageView
-            android:layout_width="@dimen/img_width_height"
-            android:layout_height="@dimen/img_width_height"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/textview1"
-            android:src="@drawable/ic_tasks" />
     </RelativeLayout>
+
+    <ImageView
+        android:layout_width="@dimen/img_width_height"
+        android:layout_height="@dimen/img_width_height"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/center_view"
+        android:layout_marginBottom="32dp"
+        android:src="@drawable/ic_tasks" />
 
     <TextView
         android:layout_width="match_parent"

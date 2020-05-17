@@ -13,5 +13,6 @@
     <color name="colorListItem">#bbffff</color>
     <color name="colorAccentLight2">#00ddff</color>
 
+    <color name="colorUpdateBackground">#bbffff</color>
     <color name="timestamp">#858585</color>
 </resources>

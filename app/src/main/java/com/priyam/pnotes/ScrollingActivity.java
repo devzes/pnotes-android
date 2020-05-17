@@ -22,6 +22,7 @@ import com.priyam.pnotes.shared.PrefManager;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,12 +31,17 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class ScrollingActivity extends AppCompatActivity {
 
@@ -43,8 +49,10 @@ public class ScrollingActivity extends AppCompatActivity {
     private List<Note> noteList = new ArrayList<>();
     private RecyclerView recyclerView;
     private NoteAdapter mNoteAdapter;
+    ArrayList<Integer> isExpandedList = new ArrayList<>(); // To have a list oh which note is expanded or not
+    ArrayList<String> noteKeys = new ArrayList<>();  // To store the note ids according to their postion
 
-    // Shared Prefernces
+    // Shared Preferences
     PrefManager prefManager;
     String signedInUser;
 
@@ -65,8 +73,8 @@ public class ScrollingActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                // Open add note intent
+
             }
         });
 
@@ -77,14 +85,17 @@ public class ScrollingActivity extends AppCompatActivity {
         signedInUser = account.getEmail();
         int len = signedInUser.length();
         signedInUser = signedInUser.substring(0,len-10);  //getting only the email name
-        Log.d("Siugned In user", signedInUser);
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference(signedInUser);
+        //Log.d("Signed In user", signedInUser);
 
+        // Firebase configurations
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database.setPersistenceEnabled(true); //This stores the cache in the device offline so that without internet it can be in the cache
+        // This also update and sync automatically when the network is back!
+
+        // Get database reference
+        DatabaseReference myRef = database.getReference(signedInUser);
+        // Example note
 //        Note note = new Note("First note","description","date");
-//        noteList.add(note);
-//
-//        note = new Note("Second ONe","description","date");
 //        noteList.add(note);
 
         // For adding the notelist to the screen
@@ -95,11 +106,13 @@ public class ScrollingActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mNoteAdapter);
 
+        // For any change and getting the data from the firebase realtime database
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 // Right now it updates all
                 //Log.d("Count",""+dataSnapshot.getChildrenCount());
+
                 if(dataSnapshot.getChildrenCount()==0){
                     // New user
                     findViewById(R.id.welcome_message).setVisibility(View.VISIBLE);
@@ -107,9 +120,16 @@ public class ScrollingActivity extends AppCompatActivity {
                 } else{
                     noteList.clear();
                     for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                        // Store the key list
+                        //Log.d("check here", Objects.requireNonNull(postSnapshot.getKey())); //This gives the keys
+                        noteKeys.add(postSnapshot.getKey());
+
+                        // Store the data
                         Note post = postSnapshot.getValue(Note.class);
                         //Log.d("Priyam Error",post.getTitle());
                         noteList.add(post);
+
+                        // Use noteList with noteKeys to have the note with their id and the index gives the position
                     }
                     findViewById(R.id.activity_scrolling_progress).setVisibility(View.GONE);
                     recyclerView.setAdapter(mNoteAdapter);
@@ -128,6 +148,51 @@ public class ScrollingActivity extends AppCompatActivity {
 //        note = new Note("Hello Bye","descripton","date");
 //        noteList.add(note);
 
+        /**
+         * On long press on RecyclerView item, open alert dialog
+         * with options to choose
+         * Edit and Delete
+         * */
+        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(this,
+                recyclerView, new RecyclerTouchListener.ClickListener() {
+            @Override
+            public void onClick(final View view, final int position) {
+                //Toast.makeText(ScrollingActivity.this, position+" clicked once", Toast.LENGTH_SHORT).show();
+                //recyclerView.findViewById(R.id.note_description).setVisibility(View.VISIBLE); changing only 1st one
+
+                int isExpanded = 0;
+                for(Integer i : isExpandedList){
+                    if(i==position) {
+                        isExpanded = 1;
+                        break;
+                    }
+                }
+
+                if(isExpanded==0){
+                    view.findViewById(R.id.note_description).setVisibility(View.VISIBLE);
+                    isExpandedList.add(position);
+
+                } else{
+                    view.findViewById(R.id.note_description).setVisibility(View.GONE);
+                    isExpandedList.remove(new Integer(position));
+                }
+
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+                // This opens update activity (UpdateNote)
+                //Toast.makeText(ScrollingActivity.this, position+" Long Press", Toast.LENGTH_SHORT).show();
+                Intent i  = new Intent(ScrollingActivity.this, UpdateNote.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("noteid",noteKeys.get(position));
+                bundle.putString("title",noteList.get(position).getTitle());
+                bundle.putString("date",noteList.get(position).getDate());
+                bundle.putString("description",noteList.get(position).getDescription());
+                i.putExtras(bundle);
+                startActivity(i);  // Start Update activity
+            }
+        }));
 
     }
 
@@ -181,4 +246,6 @@ public class ScrollingActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
 }

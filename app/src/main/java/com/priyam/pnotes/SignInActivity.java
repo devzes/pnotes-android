@@ -116,7 +116,7 @@ public class SignInActivity extends AppCompatActivity {
                 prefManager.setEmail(account.getEmail());
 
                 // Give message for successful sign in
-                Toast.makeText(SignInActivity.this, "Sign In successful!",Toast.LENGTH_SHORT).show();
+//                Toast.makeText(SignInActivity.this, "Sign In successful!",Toast.LENGTH_SHORT).show();
 
                 // Update UI after successful sign in!
                 updateUI(account);

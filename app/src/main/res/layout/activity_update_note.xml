@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:background="@color/colorUpdateBackground">
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/fab_update"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_tick"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/update_note_title"
+        android:background="@drawable/btn_custom_title"
+        android:textSize="20sp"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:padding="@dimen/activity_vertical_margin"
+        android:inputType="text"
+        android:maxLines="1"
+        android:text=""
+        android:hint="Note Title" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="start|top"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:inputType="textMultiLine"
+        android:hint="Add Note Description"
+        android:text=""
+        android:autoLink="all"
+        android:id="@+id/update_note_descr"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:background="@drawable/btn_custom"
+        android:layout_below="@+id/update_note_title" />
+
+
+</RelativeLayout>
