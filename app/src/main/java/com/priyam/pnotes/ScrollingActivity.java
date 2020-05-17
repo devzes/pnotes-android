@@ -15,6 +15,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.priyam.pnotes.models.Note;
 import com.priyam.pnotes.shared.PrefManager;
@@ -39,6 +40,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -69,15 +71,6 @@ public class ScrollingActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Open add note intent
-
-            }
-        });
-
         // Firebase database first get the account signed in
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
@@ -88,24 +81,44 @@ public class ScrollingActivity extends AppCompatActivity {
         //Log.d("Signed In user", signedInUser);
 
         // Firebase configurations
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        database.setPersistenceEnabled(true); //This stores the cache in the device offline so that without internet it can be in the cache
-        // This also update and sync automatically when the network is back!
+        FirebaseDatabase database = DatabaseInstance.getDatabase(); // A global class
 
         // Get database reference
-        DatabaseReference myRef = database.getReference(signedInUser);
+        Query myRef = database.getReference(signedInUser).orderByChild("timestamp");
+
         // Example note
 //        Note note = new Note("First note","description","date");
 //        noteList.add(note);
 
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Open add note intent
+                startActivity(new Intent(ScrollingActivity.this, AddNote.class));
+            }
+        });
+
+
         // For adding the notelist to the screen
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view_note_list);
         mNoteAdapter = new NoteAdapter(noteList);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(ScrollingActivity.this);
+
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mNoteAdapter);
 
+        /* Important
+        Right now we are only using data changed for the whole thing, which eventually
+        gets all the data even on a simple change, this is good, but in the long turn when updates are added, it is not good,
+        also any child particular change might create a full new list
+        It has better updates as whole list is updated, but it can take time also, so not good
+        Instead:
+        SEE Working with lists in firebase in documentation
+        ! Important so take care to update later!
+         */
         // For any change and getting the data from the firebase realtime database
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -131,6 +144,10 @@ public class ScrollingActivity extends AppCompatActivity {
 
                         // Use noteList with noteKeys to have the note with their id and the index gives the position
                     }
+                    // Reverse them in descending order
+                    Collections.reverse(noteKeys);
+                    Collections.reverse(noteList);
+
                     findViewById(R.id.activity_scrolling_progress).setVisibility(View.GONE);
                     recyclerView.setAdapter(mNoteAdapter);
                 }
@@ -189,6 +206,7 @@ public class ScrollingActivity extends AppCompatActivity {
                 bundle.putString("title",noteList.get(position).getTitle());
                 bundle.putString("date",noteList.get(position).getDate());
                 bundle.putString("description",noteList.get(position).getDescription());
+                bundle.putString("user", signedInUser);  // Gives the name only for the email one
                 i.putExtras(bundle);
                 startActivity(i);  // Start Update activity
             }
@@ -246,6 +264,5 @@ public class ScrollingActivity extends AppCompatActivity {
                     }
                 });
     }
-
 
 }

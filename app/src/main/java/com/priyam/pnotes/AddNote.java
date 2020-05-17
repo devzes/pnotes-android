@@ -6,39 +6,39 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ServerValue;
+import com.priyam.pnotes.models.Note;
+import com.priyam.pnotes.models.NoteNew;
 
 import java.util.Date;
 
-public class UpdateNote extends AppCompatActivity {
+public class AddNote extends AppCompatActivity {
 
     EditText noteTitleEditText, noteDescriptionEditText;
-    String gotTitle, gotDescription, gotNoteId, gotUser;
+    String signedInUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_note);
 
+        // Get the current signedin user
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        signedInUser = account.getEmail();
+        int len = signedInUser.length();
+        signedInUser = signedInUser.substring(0,len-10);  //getting only the email name
+
         // Get layout parameters
         noteTitleEditText = findViewById(R.id.update_note_title);
         noteDescriptionEditText = findViewById(R.id.update_note_descr);
-
-        // Getting values from the last intent
-        Bundle bundle = getIntent().getExtras();
-        assert bundle != null;
-        gotTitle = bundle.getString("title");
-        gotDescription = bundle.getString("description");
-        gotNoteId = bundle.getString("noteid");
-        gotUser = bundle.getString("user");
-        noteTitleEditText.setText(gotTitle);
-        noteDescriptionEditText.setText(gotDescription);
 
         // Update button
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_update);
@@ -49,11 +49,13 @@ public class UpdateNote extends AppCompatActivity {
 
             }
         });
+
     }
+
 
     @Override
     public void onBackPressed(){
-        if(noteDescriptionEditText.getText().toString().equals(gotDescription) && noteTitleEditText.getText().toString().equals(gotTitle)){
+        if(noteDescriptionEditText.getText().toString().trim().equals("") && noteTitleEditText.getText().toString().trim().equals("")){
             // No changes made
             finish();
         } else{
@@ -90,29 +92,32 @@ public class UpdateNote extends AppCompatActivity {
 
     }
 
-    public void saveNote(){
-        if(noteDescriptionEditText.getText().toString().equals(gotDescription) && noteTitleEditText.getText().toString().equals(gotTitle)){
+    private void saveNote(){
+
+        if(noteDescriptionEditText.getText().toString().trim().equals("") && noteTitleEditText.getText().toString().trim().equals("")){
             // No changes made
             finish();
-        } else{
+        } else {
+
             // Now update realtime database
-            DatabaseReference myRef = DatabaseInstance.getDatabase().getReference(gotUser).child(gotNoteId);
+            DatabaseReference myRef = DatabaseInstance.getDatabase().getReference(signedInUser);
             // Implementing a class with which data persists and same instance can be used!
 
-            myRef.child("title").setValue(noteTitleEditText.getText().toString());
-            myRef.child("description").setValue(noteDescriptionEditText.getText().toString());
-            myRef.child("timestamp").setValue(ServerValue.TIMESTAMP);  //Adding the timestamp to the note
+            NoteNew note = new NoteNew();
+            note.setTitle(noteTitleEditText.getText().toString());
+            note.setDescription(noteDescriptionEditText.getText().toString());
+            note.setTimestamp(ServerValue.TIMESTAMP);  //Adding the timestamp to the note (This adds long value, and
             //Log.d("Updated:", "check now");
             Date d = new Date();
             CharSequence s  = DateFormat.format("MMM d", d.getTime());
-            myRef.child("date").setValue(s); //Set the data when the note was updated
+            note.setDate(s.toString()); //Set the data when the note was updated
 
-            myRef.push(); // Push it to the database
+            myRef.push().setValue(note); // Push it to the database
 
-            Toast.makeText(UpdateNote.this, "Updated Successfully!", Toast.LENGTH_SHORT ).show();
+            Toast.makeText(AddNote.this, "Added Note Successfully!", Toast.LENGTH_SHORT ).show();
             finish();
+
         }
+
     }
-
-
 }

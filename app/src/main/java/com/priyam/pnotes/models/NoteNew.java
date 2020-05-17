@@ -2,16 +2,21 @@ package com.priyam.pnotes.models;
 
 import java.util.Map;
 
-public class Note {
+/* POJO class used only for inserting */
+
+public class NoteNew {
+
+    private Map<String, String> timestamp;
 
     private String title, date, description;
 
-    public Note(){}
+    public NoteNew(){}
 
-    public Note(String title, String date, String description){
+    public NoteNew(String title, String date, String description, Map<String, String> timestamp){
         this.title = title;
         this.date = date;
         this.description = description;
+        this.timestamp = timestamp;
     }
 
     public String getTitle(){
@@ -38,4 +43,11 @@ public class Note {
         this.description = description;
     }
 
+    public void setTimestamp(Map<String, String> timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public Map<String, String> getTimestamp(){
+        return timestamp;
+    }
 }

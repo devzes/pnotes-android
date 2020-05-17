@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".ScrollingActivity"
+    app:reverseLayout="true"
+    app:stackFromEnd="true"
     android:id="@+id/recycler_view_note_list"
     android:background="@color/colorAccentLight2"
     tools:showIn="@layout/activity_scrolling">

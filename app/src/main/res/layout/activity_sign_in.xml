@@ -36,7 +36,7 @@
         android:layout_height="@dimen/img_width_height"
         android:layout_centerHorizontal="true"
         android:layout_above="@+id/center_view"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:src="@drawable/ic_tasks" />
 
     <TextView
