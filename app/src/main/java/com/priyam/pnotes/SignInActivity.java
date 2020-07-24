@@ -105,6 +105,7 @@ public class SignInActivity extends AppCompatActivity {
         }
     }
 
+    // This does not works on release apk right now as it used different key stores
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
@@ -116,7 +117,7 @@ public class SignInActivity extends AppCompatActivity {
                 prefManager.setEmail(account.getEmail());
 
                 // Give message for successful sign in
-//                Toast.makeText(SignInActivity.this, "Sign In successful!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignInActivity.this, "Sign In successful!",Toast.LENGTH_SHORT).show();
 
                 // Update UI after successful sign in!
                 updateUI(account);
@@ -128,6 +129,7 @@ public class SignInActivity extends AppCompatActivity {
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Toast.makeText(SignInActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             Log.w("PRIYAM Message", "signInResult:failed code=" + e.getStatusCode());
             updateUI(null);
 
